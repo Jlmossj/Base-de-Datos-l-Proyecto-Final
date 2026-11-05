@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoAudit | Reportes</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+.reporte-panel{min-width:0;overflow:hidden}
+.filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.filtros label{display:flex;flex-direction:column;gap:6px;min-width:135px;flex:1 1 145px}
+.filtros input,.filtros select{width:100%;box-sizing:border-box;padding:12px;background:#151525;color:#fff;border:1px solid #464262;border-radius:8px}
+.filtros button{min-height:43px}
+.tabla-scroll{width:100%;overflow-x:auto;margin-top:18px;border:1px solid #39354a;border-radius:12px}
+.reporte-tabla{border-collapse:collapse;width:100%;min-width:1150px;font-size:13px}
+.reporte-tabla th,.reporte-tabla td{padding:13px 12px;text-align:left;border-bottom:1px solid #39354a;vertical-align:top}
+.reporte-tabla th{color:#22d3ee;background:#151525;white-space:nowrap;font-weight:700}
+.reporte-tabla tbody tr:hover{background:rgba(34,211,238,.045)}
+.reporte-tabla tbody tr:last-child td{border-bottom:0}
+.reporte-tabla .sin-salto{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.reporte-tabla .dato{min-width:150px;max-width:260px;overflow-wrap:anywhere;white-space:pre-wrap}
+.reporte-tabla .fecha{white-space:nowrap;min-width:145px}
+.accion-tag{display:inline-block;padding:4px 9px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.03em;white-space:nowrap;background:#29314b;color:#d6eaff}
+.accion-insert{background:#143d36;color:#81e6c0}.accion-update{background:#3a2e16;color:#ffdf8b}.accion-delete{background:#441e32;color:#ffa6be}
+.enlace{color:#22d3ee;text-decoration:none}.reporte-resumen{margin:18px 0 0;color:#c9c9d9}
+@media(max-width:700px){.filtros label{flex-basis:100%}.filtros button{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<header class="barra"><div class="marca"><div class="logo pequeno">A</div><div><h1>AutoAudit</h1><span>Sistema de Auditoría Automatizada</span></div></div><div class="usuario"><a class="enlace" href="{{ url_for('inicio') }}">Configuración</a><a class="btn-salir" href="{{ url_for('logout') }}">Cerrar sesión</a></div></header>
+<main class="contenido">
+<div class="titulo-pagina"><div><p class="etiqueta">AUDITORÍA</p><h2>Bitácora y reportes</h2><p>Consulta los cambios registrados y exporta los resultados.</p></div></div>
+<div class="panel reporte-panel">
+<form class="filtros" method="GET">
+<label>Tabla<input name="tabla" value="{{ filtros.tabla }}" placeholder="Ej. estudiantes"></label>
+<label>Operación<select name="accion"><option value="">Todas</option>{% for op in ['INSERT','UPDATE','DELETE'] %}<option value="{{ op }}" {% if filtros.accion == op %}selected{% endif %}>{{ op }}</option>{% endfor %}</select></label>
+<label>Usuario<input name="usuario" value="{{ filtros.usuario }}" placeholder="Usuario BD"></label>
+<label>Desde<input type="date" name="desde" value="{{ filtros.desde }}"></label>
+<label>Hasta<input type="date" name="hasta" value="{{ filtros.hasta }}"></label>
+<button class="btn-principal" type="submit">Filtrar</button>
+<button class="btn-secundario" type="submit" name="exportar" value="csv">Exportar CSV</button>
+</form>
+<p class="reporte-resumen">Mostrando {{ filas|length }} registros (máximo 1000). Desliza horizontalmente la tabla para ver todas las columnas.</p>
+<div class="tabla-scroll"><table class="reporte-tabla"><thead><tr><th>Fecha</th><th>Usuario BD</th><th>Tabla</th><th>Columna</th><th>Acción</th><th>Anterior</th><th>Nuevo</th></tr></thead>
+<tbody>{% for f in filas %}<tr>
+<td class="fecha">{{ f[1].strftime('%d/%m/%Y %H:%M:%S') if f[1] else '—' }}</td>
+<td class="sin-salto">{{ f[2] }}</td>
+<td class="sin-salto">{{ f[3] }}</td>
+<td class="sin-salto">{{ f[4] }}</td>
+<td class="sin-salto"><span class="accion-tag accion-{{ f[5]|lower }}">{{ f[5] }}</span></td>
+<td class="dato">{{ f[6] if f[6] is not none else '—' }}</td>
+<td class="dato">{{ f[7] if f[7] is not none else '—' }}</td>
+</tr>{% else %}<tr><td colspan="7">No hay registros para estos filtros.</td></tr>{% endfor %}</tbody></table></div>
+</div></main></body></html>

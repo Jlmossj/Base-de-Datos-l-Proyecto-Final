@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AutoAudit | Configuración</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="barra">
+
+        <div class="marca">
+
+            <div class="logo pequeno">
+                A
+            </div>
+
+            <div>
+                <h1>AutoAudit</h1>
+                <span>Sistema de Auditoría Automatizada</span>
+            </div>
+
+        </div>
+
+        <div class="usuario">
+
+            <div>
+                <span class="usuario-label">
+                    Sesión administrativa
+                </span>
+
+                <strong>{{ usuario }}</strong>
+            </div>
+
+            <a
+                class="btn-salir"
+                href="{{ url_for('logout') }}"
+            >
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main class="contenido"><p><a href="{{ url_for('reportes') }}" style="color:#22d3ee;font-weight:bold">Ver bitácora y reportes →</a></p>
+
+        <div class="titulo-pagina">
+
+            <div>
+                <p class="etiqueta">
+                    ADMINISTRACIÓN
+                </p>
+
+                <h2>
+                    Configuración de Auditoría
+                </h2>
+
+                <p>
+                    Seleccione las tablas, columnas y operaciones
+                    que serán monitoreadas por AutoAudit.
+                </p>
+            </div>
+
+        </div>
+
+
+        {% if mensaje %}
+
+            <div class="mensaje exito">
+                {{ mensaje }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="panel">
+
+            <div class="panel-titulo">
+
+                <div class="numero">
+                    1
+                </div>
+
+                <div>
+                    <h3>Seleccionar tabla</h3>
+
+                    <p>
+                        Seleccione una tabla existente
+                        en la base de datos.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form method="POST">
+
+                <div class="seleccion-tabla">
+
+                    <select name="tabla" required>
+
+                        <option value="">
+                            Seleccione una tabla
+                        </option>
+
+                        {% for tabla in tablas %}
+
+                            <option
+                                value="{{ tabla }}"
+
+                                {% if tabla == tabla_seleccionada %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ tabla }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+                    <button
+                        class="btn-secundario"
+                        type="submit"
+                        name="accion"
+                        value="cargar"
+                    >
+                        Cargar configuración
+                    </button>
+
+                </div>
+
+
+                {% if columnas %}
+
+                    <div class="separador"></div>
+
+
+                    <div class="tabla-actual">
+
+                        <span>
+                            Tabla seleccionada
+                        </span>
+
+                        <strong>
+                            {{ tabla_seleccionada }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="config-grid">
+
+
+                        <section class="config-seccion">
+
+                            <div class="panel-titulo">
+
+                                <div class="numero">
+                                    2
+                                </div>
+
+                                <div>
+                                    <h3>Columnas</h3>
+
+                                    <p>
+                                        Seleccione las columnas
+                                        que desea auditar.
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="opciones">
+
+                                {% for columna in columnas %}
+
+                                    <label class="opcion">
+
+                                        <input
+                                            type="checkbox"
+                                            name="columnas"
+                                            value="{{ columna }}"
+
+                                            {% if columna in configuracion %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                        <span>
+                                            {{ columna }}
+                                        </span>
+
+                                    </label>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </section>
+
+
+                        <section class="config-seccion">
+
+                            <div class="panel-titulo">
+
+                                <div class="numero">
+                                    3
+                                </div>
+
+                                <div>
+                                    <h3>Operaciones</h3>
+
+                                    <p>
+                                        Indique qué operaciones
+                                        serán registradas.
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="opciones">
+
+                                <label class="opcion operacion">
+
+                                    <input
+                                        type="checkbox"
+                                        name="insert"
+
+                                        {% for columna in configuracion %}
+                                            {% if configuracion[columna]["INSERT"] %}
+                                                checked
+                                            {% endif %}
+                                        {% endfor %}
+                                    >
+
+                                    <span>
+                                        INSERT
+                                    </span>
+
+                                </label>
+
+
+                                <label class="opcion operacion">
+
+                                    <input
+                                        type="checkbox"
+                                        name="update"
+
+                                        {% for columna in configuracion %}
+                                            {% if configuracion[columna]["UPDATE"] %}
+                                                checked
+                                            {% endif %}
+                                        {% endfor %}
+                                    >
+
+                                    <span>
+                                        UPDATE
+                                    </span>
+
+                                </label>
+
+
+                                <label class="opcion operacion">
+
+                                    <input
+                                        type="checkbox"
+                                        name="delete"
+
+                                        {% for columna in configuracion %}
+                                            {% if configuracion[columna]["DELETE"] %}
+                                                checked
+                                            {% endif %}
+                                        {% endfor %}
+                                    >
+
+                                    <span>
+                                        DELETE
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+
+                    <div class="estado">
+
+                        <div>
+
+                            <h3>
+                                Estado de auditoría
+                            </h3>
+
+                            <p>
+                                Active o desactive el monitoreo
+                                de esta configuración.
+                            </p>
+
+                        </div>
+
+
+                        <label class="switch-container">
+
+    <input
+        class="switch-input"
+        type="checkbox"
+        name="auditoria_activa"
+        {% if auditoria_activa_actual %}checked{% endif %}
+    >
+
+    <span class="switch"></span>
+
+    <span class="switch-texto">
+        Auditoría activa
+    </span>
+
+</label>
+
+                    </div>
+
+
+                    <div class="acciones">
+
+                        <button
+                            class="btn-principal guardar"
+                            type="submit"
+                            name="accion"
+                            value="guardar"
+                        >
+                            Guardar cambios
+                        </button>
+
+                    </div>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+
+        <div class="info-seguridad">
+
+            <strong>
+                Acceso protegido
+            </strong>
+
+            <span>
+                Este módulo está disponible únicamente
+                para usuarios administradores.
+            </span>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

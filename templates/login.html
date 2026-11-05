@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoAudit | Acceso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-body">
+
+    <div class="login-container">
+
+        <div class="login-brand">
+            <div class="logo">A</div>
+
+            <h1>AutoAudit</h1>
+
+            <p>
+                Sistema de Auditoría Automatizada
+            </p>
+        </div>
+
+        <div class="login-card">
+
+            <h2>Acceso administrativo</h2>
+
+            <p class="descripcion">
+                Ingrese sus credenciales para administrar
+                la configuración de auditoría.
+            </p>
+
+            {% if mensaje %}
+                <div class="mensaje error">
+                    {{ mensaje }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+
+                <div class="campo">
+                    <label>Usuario</label>
+
+                    <input
+                        type="text"
+                        name="usuario"
+                        placeholder="Ingrese su usuario"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label>Contraseña</label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Ingrese su contraseña"
+                        required
+                    >
+                </div>
+
+                <button class="btn-principal" type="submit">
+                    Iniciar sesión
+                </button>
+
+            </form>
+
+        </div>
+
+        <p class="footer-login">
+            AutoAudit · PostgreSQL 18
+        </p>
+
+    </div>
+
+</body>
+</html>
